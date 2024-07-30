@@ -47,13 +47,13 @@ func Dial(ctx context.Context, chainId int, rpcs []string) (*EvmClient, error) {
 
 			_client, err := ethclient.DialContext(c, url)
 			if err != nil {
-				logger.ErrorF("Failed to dial %s-%s", url, err.Error())
+				logger.WarnF("Failed to dial %s-%s", url, err.Error())
 				return
 			}
 
 			_chainId, err := _client.ChainID(ctx)
 			if err != nil {
-				logger.ErrorF("Failed to get chain id: %s", err.Error())
+				logger.WarnF("Failed to get chain id: %s", err.Error())
 				return
 			}
 

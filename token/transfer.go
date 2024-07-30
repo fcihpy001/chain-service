@@ -3,17 +3,18 @@
 // @Desc
 //
 
-package service
+package token
 
 import (
 	"context"
-	"github.com/DappOSDao/NodeSwapX/service"
+	"github.com/DappOSDao/node-service/network"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/fcihpy001/chain-service/constant"
 	"github.com/fcihpy001/chain-service/contract"
 	"github.com/fcihpy001/chain-service/logger"
-	"github.com/fcihpy001/chain-service/util"
+	"github.com/fcihpy001/chain-service/service"
 	"github.com/shopspring/decimal"
 	"math"
 	"math/big"
@@ -21,7 +22,7 @@ import (
 
 func TransferAsset(nodeId int, chainId int, amount float64, tokenName string) error {
 
-	client, err := GetEvmClient(getRPC(chainId), chainId)
+	client, err := service.GetEvmClient(service.GetRPC(chainId), chainId)
 	if err != nil {
 		logger.Error(err.Error())
 		return err
@@ -32,8 +33,8 @@ func TransferAsset(nodeId int, chainId int, amount float64, tokenName string) er
 	}
 
 	fromAddr := common.HexToAddress(service.GetAccount().Address)
-	receiverAddr := common.HexToAddress(GetNodeAddr(nodeId))
-	tokenInfo := service.GetTokenInfo(nodeId, chainId, tokenName)
+	receiverAddr := common.HexToAddress(service.GetNodeAddr(nodeId))
+	tokenInfo := network.GetTokenInfo(nodeId, chainId, tokenName)
 
 	callData, err := contract.GetTransferCallData(receiverAddr, amount, tokenInfo.TokenDecimal)
 	if err != nil {
@@ -41,8 +42,8 @@ func TransferAsset(nodeId int, chainId int, amount float64, tokenName string) er
 	}
 
 	amountBIg := big.NewInt(0)
-	if tokenName != util.TokenETH {
-		receiverAddr = common.HexToAddress(service.GetTokenInfo(nodeId, chainId, tokenName).TokenAddress)
+	if tokenName != constant.TokenETH {
+		receiverAddr = common.HexToAddress(network.GetTokenInfo(nodeId, chainId, tokenName).TokenAddress)
 	} else {
 		callData = nil
 		tokenDecimal := math.Pow10(tokenInfo.TokenDecimal)
@@ -87,7 +88,7 @@ func TransferAsset(nodeId int, chainId int, amount float64, tokenName string) er
 		return err
 	}
 
-	logger.InfoF("%s/tx/%s", service.GetChainInfo(chainId).BlockExplorerUrl, signedTx.Hash().String())
+	logger.InfoF("%s/tx/%s", network.GetChainInfo(chainId).BlockExplorerUrl, signedTx.Hash().String())
 
 	return nil
 }

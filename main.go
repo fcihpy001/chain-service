@@ -6,22 +6,29 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/fcihpy001/chain-service/service"
+	"github.com/fcihpy001/chain-service/constant"
+	"github.com/fcihpy001/chain-service/model"
+	"github.com/fcihpy001/chain-service/swap"
 )
 
 func main() {
-	fmt.Println("hello world")
+	functionTest()
+}
 
-	client, err := service.Dial(context.Background(), 10, []string{"https://opt-mainnet.nodereal.io/v1/44acc0b89a0c4643be14ed0b58307a4c"})
-	if err != nil {
-		panic(err)
+func functionTest() {
+	task1 := model.Task{
+		Type:       constant.TaskTypePayDB,
+		NodeId:     26,
+		SrcChainId: 56,
+		DstChainId: 10,
+		Amounts:    []float64{0.2},
+		TokenIns:   []string{"USDT"},
+		TokenOuts:  []string{"USDT"},
+		HasSrcVw:   false,
+		HasDstVw:   false,
 	}
-	balance, err := client.RawClients[0].BalanceAt(context.Background(), common.HexToAddress("0x178ad9283bba524d2e10ad1102a079144bc569e0"), nil)
+	_, err := swap.PayDBSwap([]model.Task{task1}, false)
 	if err != nil {
 		return
 	}
-	fmt.Println(balance)
 }

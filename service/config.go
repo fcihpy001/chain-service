@@ -58,7 +58,7 @@ func getUSDT(chainId int) string {
 	return chainUSDT[chainId]
 }
 
-func getRPC(chainId int) string {
+func GetRPC(chainId int) string {
 	return chainRPC[chainId]
 }
 
